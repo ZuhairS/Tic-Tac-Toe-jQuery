@@ -7,6 +7,9 @@ class Board {
 
   isEmptyPos(pos) {
     if (!Board.isValidPos(pos)) {
+      console.log(pos);
+      console.log(pos[0]);
+      console.log(pos[1]);
       throw new MoveError('Is not valid position!');
     }
 

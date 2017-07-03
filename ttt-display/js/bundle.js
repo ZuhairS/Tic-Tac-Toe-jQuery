@@ -83,8 +83,11 @@ module.exports = MoveError;
 
 const View = __webpack_require__(2);// require appropriate file
 const Game = __webpack_require__(3);// require appropriate file
+const game=new Game();
 
 $( () => {
+  let $ttt = $('.ttt');
+  const view=new View(game,$ttt);
   // Your code here
 });
 
@@ -94,13 +97,45 @@ $( () => {
 /***/ (function(module, exports) {
 
 class View {
-  constructor(game, $el) {}
+  constructor(game, $el) {
+    this.game=game;
+    this.$el=$el;
+    this.setupBoard();
+    // this.game.run({});
+  }
 
-  bindEvents() {}
+  bindEvents($square) {
+    $square.on("click", (event) => {
+      this.makeMove($square);
+      console.log($square);
+    });
+  }
 
-  makeMove($square) {}
+  makeMove($square) {
+    let pos = $square.data("data-coor");
+    console.log(pos);
+    pos=[pos];
+    this.game.playMove(pos);
+    let mark = this.game.board.grid[pos[0]][pos[1]];
+    $square.text(mark);
+  }
 
-  setupBoard() {}
+  setupBoard() {
+    const addRow = (rowIdx) => {
+      const $row = $("<ul class='row'></ul>");
+      for (let colIdx = 0; colIdx < 3; colIdx++) {
+        const $square = $("<li></li>").addClass("square").data("data-coor", [rowIdx, colIdx]);
+        this.bindEvents($square);
+        $row.append($square);
+      }
+      this.$el.append($row);
+    };
+    for (var i = 0; i < 3; i++) {
+      addRow(i);
+    }
+  }
+
+
 }
 
 module.exports = View;
@@ -199,6 +234,9 @@ class Board {
 
   isEmptyPos(pos) {
     if (!Board.isValidPos(pos)) {
+      console.log(pos);
+      console.log(pos[0]);
+      console.log(pos[1]);
       throw new MoveError('Is not valid position!');
     }
 
