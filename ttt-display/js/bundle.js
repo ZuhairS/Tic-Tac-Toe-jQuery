@@ -101,23 +101,38 @@ class View {
     this.game=game;
     this.$el=$el;
     this.setupBoard();
+    this.gameover=false;
     // this.game.run({});
   }
 
   bindEvents($square) {
     $square.on("click", (event) => {
       this.makeMove($square);
-      console.log($square);
+    });
+    $square.on("mouseenter", (event) => {
+      $square.css("background-color", "BurlyWood");
+    });
+    $square.on("mouseleave", (event) => {
+      $square.css("background-color", "LightGoldenRodYellow");
     });
   }
 
   makeMove($square) {
+    if(this.gameover){return;}
     let pos = $square.data("data-coor");
-    console.log(pos);
-    pos=[pos];
     this.game.playMove(pos);
     let mark = this.game.board.grid[pos[0]][pos[1]];
+    if (mark === "X") {
+      $square.css("color", "MediumSeaGreen");
+    }
     $square.text(mark);
+    let winner=this.game.winner();
+    if(winner){
+      setTimeout(()=>alert(`${winner} wins!!!`),5);
+      this.gameover=true;
+    }else if(this.game.isOver()===true){
+      setTimeout(()=>alert(`Draw!`),5);
+    }
   }
 
   setupBoard() {
@@ -349,7 +364,7 @@ class Board {
   }
 }
 
-Board.marks = ['x', 'o'];
+Board.marks = ['X', 'O'];
 
 module.exports = Board;
 
